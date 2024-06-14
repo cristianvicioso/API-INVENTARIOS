@@ -2,6 +2,7 @@ const { Router } = require('express');
 const Usuario = require('../models/Usuario');
 const { validationResult, check } = require('express-validator');
 const bycript = require('bcryptjs');
+const { generarJWT } = require('../helpers/jwt');
 
 const router = Router();
 
@@ -27,9 +28,12 @@ router.post('/', [
             return res.status(400).json({mensaje: 'User not found'});
         }
 
+        // generamos token
+        const token =generarJWT(usuario);
+
         res.json({
             _id: usuario._id, nombre: usuario.nombre,
-            rol: usuario.rol, email: usuario.email
+            rol: usuario.rol, email: usuario.email, access_token: token
         });
 
     } catch (error) {

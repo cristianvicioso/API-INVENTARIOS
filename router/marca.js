@@ -1,11 +1,13 @@
 const { Router } = require('express');
 const Marca = require('../models/Marca');
 const { validationResult, check } = require('express-validator');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { validarRolAdmin } = require('../middleware/validar-rol-admin');
 
 const router = Router();
 
 //LISTAR MARCA
-router.get('/', async function (req, res) {
+router.get('/', [ validarJWT, validarRolAdmin ], async function (req, res) {
     try {
 
         const marcas = await Marca.find();
@@ -19,7 +21,7 @@ router.get('/', async function (req, res) {
 });
 
 //CREAR MARCA
-router.post('/', [
+router.post('/', [ validarJWT, validarRolAdmin ], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('estado', 'invalid.estado').isIn(['Activo', 'Inactivo']),
 
@@ -50,7 +52,7 @@ router.post('/', [
 });
 
 //ACTUALIZAR MARCA
-router.put('/:marcaId', [
+router.put('/:marcaId', [ validarJWT, validarRolAdmin ], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('estado', 'invalid.estado').isIn(['Activo', 'Inactivo']),
 

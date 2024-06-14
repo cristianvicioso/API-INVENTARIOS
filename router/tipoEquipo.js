@@ -1,11 +1,13 @@
 const { Router } = require('express');
 const TipoEquipo = require('../models/TipoEquipo');
 const { validationResult, check } = require('express-validator');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { validarRolAdmin } = require('../middleware/validar-rol-admin');
 
 const router = Router();
 
 //LISTAR TIPO EQUIPO
-router.get('/', async function (req, res) {
+router.get('/', [ validarJWT, validarRolAdmin ], async function (req, res) {
     try {
 
         const tipoEquipos = await TipoEquipo.find();
@@ -19,7 +21,7 @@ router.get('/', async function (req, res) {
 });
 
 //CREAR TIPO EQUIPO
-router.post('/', [
+router.post('/', [ validarJWT, validarRolAdmin ], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('estado', 'invalid.estado').isIn(['Activo', 'Inactivo']),
 
@@ -50,7 +52,7 @@ router.post('/', [
 });
 
 //ACTUALIZAR TIPO EQUIPO
-router.put('/:tipoEquipoId', [
+router.put('/:tipoEquipoId', [ validarJWT, validarRolAdmin ], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('estado', 'invalid.estado').isIn(['Activo', 'Inactivo']),
 

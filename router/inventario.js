@@ -2,11 +2,13 @@ const { Router } = require('express');
 const Inventario = require('../models/Inventario');
 const { validationResult, check } = require('express-validator');
 const { patch } = require('./usuario');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { validarRolAdmin } = require('../middleware/validar-rol-admin');
 
 const router = Router();
 
 //LISTAR INVENTARIO
-router.get('/', async function (req, res) {
+router.get('/', [ validarJWT ], async function (req, res) {
     try {
 
         const inventarios = await Inventario.find().populate([
@@ -33,7 +35,7 @@ router.get('/', async function (req, res) {
 });
 
 //CREAR INVENTARIO
-router.post('/', [
+router.post('/', [ validarJWT, validarRolAdmin ], [
     check('serial', 'invalid.serial').not().isEmpty(),
     check('modelo', 'invalid.modelo').not().isEmpty(),
     check('descripcion', 'invalid.descripcion').not().isEmpty(),
